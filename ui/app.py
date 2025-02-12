@@ -1,29 +1,38 @@
 import streamlit as st
 from chat import run
+from pages.browser_automation import run_browser_automation
 from utils.state_manager import generate_chat_id
 
-st.set_page_config(page_title="LLM Chat Demo", layout="wide")
+st.set_page_config(page_title="Action Agent Demo", layout="wide")
 
-st.sidebar.title("Chat History")
+# Create a sidebar for navigation
+st.sidebar.title("Navigation")
+page = st.sidebar.radio("Select a page", ["Chat", "Browser Automation"])
 
-# Initialize session state for storing chats
-if "chats" not in st.session_state:
-    st.session_state["chats"] = {}
+if page == "Chat":
+    st.sidebar.title("Chat History")
 
-# "New Chat" button
-if st.sidebar.button("➕ New Chat"):
-    new_chat_id = generate_chat_id()
-    st.session_state["chats"][new_chat_id] = {"messages": [], "flow": []}
-    st.session_state["selected_chat"] = new_chat_id  # Set new chat as selected
+    # Initialize session state for storing chats
+    if "chats" not in st.session_state:
+        st.session_state["chats"] = {}
 
-# Get available chat history
-chat_keys = list(st.session_state["chats"].keys())
+    # "New Chat" button
+    if st.sidebar.button("➕ New Chat"):
+        new_chat_id = generate_chat_id()
+        st.session_state["chats"][new_chat_id] = {"messages": [], "flow": []}
+        st.session_state["selected_chat"] = new_chat_id  # Set new chat as selected
 
-# Allow switching between chats
-selected_chat = st.sidebar.radio("Select a chat", chat_keys, index=0) if chat_keys else None
+    # Get available chat history
+    chat_keys = list(st.session_state["chats"].keys())
 
-# Store selected chat in session state
-st.session_state["selected_chat"] = selected_chat
+    # Allow switching between chats
+    selected_chat = st.sidebar.radio("Select a chat", chat_keys, index=0) if chat_keys else None
 
-# Start chat
-run(selected_chat)
+    # Store selected chat in session state
+    st.session_state["selected_chat"] = selected_chat
+
+    # Start chat
+    run(selected_chat)
+
+elif page == "Browser Automation":
+    run_browser_automation()

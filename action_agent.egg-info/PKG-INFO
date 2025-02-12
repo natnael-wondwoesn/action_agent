@@ -1,0 +1,11 @@
+Metadata-Version: 2.2
+Name: action_agent
+Version: 0.1
+Requires-Dist: streamlit
+Requires-Dist: streamlit_extras
+Requires-Dist: langchain
+Requires-Dist: python-dotenv
+Requires-Dist: requests
+Requires-Dist: beautifulsoup4
+Requires-Dist: lxml
+Dynamic: requires-dist

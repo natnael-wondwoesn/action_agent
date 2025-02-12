@@ -1,0 +1,7 @@
+streamlit
+streamlit_extras
+langchain
+python-dotenv
+requests
+beautifulsoup4
+lxml
