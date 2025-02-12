@@ -1,6 +1,7 @@
 import streamlit as st
 from chat import run
 from pages.browser_automation import render as render_browser_automation
+from pages.master_controller import render as render_master_controller
 from utils.state_manager import generate_chat_id
 
 st.set_page_config(
@@ -14,6 +15,7 @@ def main():
     pages = {
         "Chat": chat_page,
         "Browser Automation": render_browser_automation,
+        "Master Controller": render_master_controller,
     }
     
     # Create a radio button for navigation
@@ -49,4 +51,10 @@ def chat_page():
     run(selected_chat)
 
 if __name__ == "__main__":
-    main()
+    st.markdown("""
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        </style>
+        """, unsafe_allow_html=True)
+    render_master_controller()

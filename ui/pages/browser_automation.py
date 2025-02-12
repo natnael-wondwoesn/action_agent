@@ -4,8 +4,8 @@ import asyncio
 from infrastructure.browser_use.main import BrowserUseAgent
 from components.browser_component import display_browser_actions
 
-async def run_browser_automation(agent):
-    """Run browser automation asynchronously"""
+async def run_browser_task(agent):
+    """Run browser automation task"""
     try:
         result = await agent.run()
         await agent.cleanup()
@@ -55,8 +55,10 @@ def render():
         # Run automation with progress
         with st.spinner("Running browser automation..."):
             try:
-                # Run the async function using asyncio
-                result = asyncio.run(run_browser_automation(agent))
+                # Set up event loop for Windows
+                loop = asyncio.ProactorEventLoop()
+                asyncio.set_event_loop(loop)
+                result = loop.run_until_complete(run_browser_task(agent))
                 
                 # Display results using the browser component
                 if result["success"]:
@@ -65,6 +67,8 @@ def render():
                 
             except Exception as e:
                 st.error(f"An error occurred: {str(e)}")
+            finally:
+                loop.close()
 
 if __name__ == "__main__":
     render()
