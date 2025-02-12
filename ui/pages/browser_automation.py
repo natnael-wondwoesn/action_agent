@@ -1,7 +1,23 @@
 import streamlit as st
 import os
+import asyncio
 from infrastructure.browser_use.main import BrowserUseAgent
 from components.browser_component import display_browser_actions
+
+async def run_browser_automation(agent):
+    """Run browser automation asynchronously"""
+    try:
+        result = await agent.run()
+        await agent.cleanup()
+        return result
+    except Exception as e:
+        return {
+            "success": False,
+            "final_result": {},
+            "errors": [str(e)],
+            "model_actions": [],
+            "model_thoughts": []
+        }
 
 def render():
     st.title("Browser Automation")
@@ -39,7 +55,8 @@ def render():
         # Run automation with progress
         with st.spinner("Running browser automation..."):
             try:
-                result = agent.run()
+                # Run the async function using asyncio
+                result = asyncio.run(run_browser_automation(agent))
                 
                 # Display results using the browser component
                 if result["success"]:
@@ -48,9 +65,6 @@ def render():
                 
             except Exception as e:
                 st.error(f"An error occurred: {str(e)}")
-            finally:
-                # Cleanup
-                agent.cleanup()
-    
+
 if __name__ == "__main__":
     render()
