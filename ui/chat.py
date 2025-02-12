@@ -17,6 +17,8 @@ def run(selected_chat=None):
         st.session_state["chats"][chat_id] = {"messages": [], "flow": flow}
         selected_chat = chat_id  # Assign chat_id for a new session
 
+    st.session_state["selected_chat"] = selected_chat  # Store globally
+
     user_input = st.text_input("Enter your task:")
 
     if user_input:
