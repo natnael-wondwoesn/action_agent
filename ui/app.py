@@ -1,15 +1,29 @@
 import streamlit as st
 from chat import run
-from pages.browser_automation import run_browser_automation
+from pages.browser_automation import render as render_browser_automation
 from utils.state_manager import generate_chat_id
 
-st.set_page_config(page_title="Action Agent Demo", layout="wide")
+st.set_page_config(
+    page_title="Action Agent Demo",
+    layout="wide"
+)
 
-# Create a sidebar for navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select a page", ["Chat", "Browser Automation"])
+def main():
+    # Create a sidebar for navigation
+    st.sidebar.title("Navigation")
+    pages = {
+        "Chat": chat_page,
+        "Browser Automation": render_browser_automation,
+    }
+    
+    # Create a radio button for navigation
+    selection = st.sidebar.radio("Select a page", list(pages.keys()))
+    
+    # Call the selected page function
+    page = pages[selection]
+    page()
 
-if page == "Chat":
+def chat_page():
     st.sidebar.title("Chat History")
 
     # Initialize session state for storing chats
@@ -34,5 +48,5 @@ if page == "Chat":
     # Start chat
     run(selected_chat)
 
-elif page == "Browser Automation":
-    run_browser_automation()
+if __name__ == "__main__":
+    main()

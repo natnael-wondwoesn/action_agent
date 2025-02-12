@@ -1,66 +1,30 @@
 import streamlit as st
-from typing import List
-from infrastructure.browser_use.main import BrowserActionOutput, BrowserThought
+from typing import Dict
 
-def apply_browser_styles():
-    """Apply custom CSS styles for browser automation display"""
-    st.markdown("""
-        <style>
-            .browser-action {
-                background-color: #f0f4f8;
-                padding: 12px;
-                border-radius: 8px;
-                margin: 8px 0;
-                border-left: 4px solid #3b82f6;
-            }
-            .browser-thought {
-                background-color: #f8f0f4;
-                padding: 12px;
-                border-radius: 8px;
-                margin: 8px 0;
-                border-left: 4px solid #ec4899;
-            }
-            .timestamp {
-                color: #6b7280;
-                font-size: 0.875rem;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-
-def display_browser_actions(actions: List[BrowserActionOutput], thoughts: List[BrowserThought]):
-    """Display browser actions and thoughts in an interleaved timeline"""
-    apply_browser_styles()
+def display_browser_actions(result: Dict):
+    """Display browser automation actions and thoughts"""
+    if not result:
+        return
     
-    st.subheader("Actions & Thoughts Timeline")
+    # Display thoughts
+    if result.get("model_thoughts"):
+        st.subheader("Agent's Thoughts")
+        for thought in result["model_thoughts"]:
+            st.write(f"- {thought['thought']}")
     
-    # Create two columns for actions and thoughts
-    col1, col2 = st.columns(2)
+    # Display actions
+    if result.get("model_actions"):
+        st.subheader("Actions Taken")
+        for action in result["model_actions"]:
+            st.write(f"- {action['action_type']}: {action['action_data']}")
     
-    with col1:
-        st.markdown("### 🖱️ Browser Actions")
-        for action in actions:
-            with st.container():
-                st.markdown(
-                    f"""
-                    <div class="browser-action">
-                        <strong>{action.action_type}</strong>
-                        <div class="timestamp">{action.timestamp or 'No timestamp'}</div>
-                        <div>{str(action.action_data)}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+    # Display final result
+    if result.get("final_result"):
+        st.subheader("Final Result")
+        st.json(result["final_result"])
     
-    with col2:
-        st.markdown("### 💭 Model Thoughts")
-        for thought in thoughts:
-            with st.container():
-                st.markdown(
-                    f"""
-                    <div class="browser-thought">
-                        <div>{thought.thought}</div>
-                        <div class="timestamp">{thought.timestamp or 'No timestamp'}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+    # Display errors
+    if not result.get("success", True) and result.get("errors"):
+        st.error("Errors occurred:")
+        for error in result["errors"]:
+            st.error(error)
