@@ -1,4 +1,5 @@
 import asyncio
+from doctest import debug
 import os
 from typing import Dict, Optional, List, Any
 from dotenv import load_dotenv
@@ -71,6 +72,7 @@ class BrowserUseAgent(ActionAgent):
         input_data = self.validate_input(self.data)
         
         self.config = BrowserConfig(
+            headless=True,
             chrome_instance_path=input_data.chrome_path
         )
         self.browser = Browser(config=self.config)
@@ -91,6 +93,7 @@ class BrowserUseAgent(ActionAgent):
         try:
             input_data = self.validate_input(self.data)
             history: AgentHistoryList = await self.agent.run(max_steps=input_data.max_steps)
+            # print(history)
             
             # Return raw output without validation
             return {
