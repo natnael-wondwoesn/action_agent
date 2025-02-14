@@ -38,7 +38,7 @@ async def long_running_task(input_data:Dict[str,Any]):
 #     print(res)
 #     # result = asyncio.run(task)
 #     return res
-def lg_run(input_data: Dict[str, Any]):
+async def lg_run(input_data: Dict[str, Any]):
     """Runs the browser automation agent asynchronously."""
     browser_use = BrowserUseAgent(
         credentials={'GEMINI_API_KEY': 'AIzaSyB5h3jiUUr_6oGw6OBQwu0CxpMUP-VZrcg'},
@@ -46,28 +46,31 @@ def lg_run(input_data: Dict[str, Any]):
         data=input_data,
         general_prompt='You are a browser automation function',
     )
+    result = await browser_use.run()
+    await browser_use.cleanup()
+    return result
 
-    async def run_agent():
-        result = await browser_use.run()
-        await browser_use.cleanup()
-        return result
+    # async def run_agent():
+    #     result = await browser_use.run()
+    #     await browser_use.cleanup()
+    #     return result
 
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        # No running event loop, so we create one
-        return asyncio.run(run_agent())
+    # try:
+    #     loop = asyncio.get_running_loop()
+    # except RuntimeError:
+    #     # No running event loop, so we create one
+    #     return asyncio.run(run_agent())
 
-    # If inside an event loop (like FastAPI), use `ensure_future`
-    task = loop.create_task(run_agent())
-    return task
+    # # If inside an event loop (like FastAPI), use `ensure_future`
+    # task = loop.create_task(run_agent())
+    # return task
 
 @app.post("/run-task")
 async def run_task(request: Dict[str,Any]):
     """Executes the long-running async function and streams responses."""
     task_description =  request.get("task_description")
     input_data =  request.get("input_data")
-    result = lg_run(input_data)
+    result = await lg_run(input_data)
 
     
     # return StreamingResponse(long_running_task(input_data), media_type="text/event-stream")
